@@ -1,0 +1,17 @@
+name: build-%SYSTEM_NAME%-%TEAM_NAME%
+on:
+  push:
+    branch: %DEV_BRANCH%
+  workflow_dispatch:
+jobs:
+  build-from-source:
+    uses: ga-private-framework-poc/$REPO_NAME%/.github/workflows/build-from-source.yml@development
+    with:
+      system-name: %SYSTEM_NAME%
+    secrets: inherit
+  deploy-to-all:
+    needs: build-from-source
+    uses: ga-private-framework-poc/$REPO_NAME%/.github/workflows/promote.yml@development
+    with:
+      system-name: %SYSTEM_NAME%
+    secrets: inherit

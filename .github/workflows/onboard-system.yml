@@ -1,0 +1,120 @@
+name: 'onboard-system'
+on:
+  workflow_dispatch:
+    inputs:
+      system-name:
+        description: 'system-name: Name of the system to be onboarded and managed by the CICD system'
+        required: true
+env:
+  SYSTEM_NAME: ${{ github.event.inputs.system-name }}
+jobs:
+  gather-system-info:
+    runs-on: ubuntu-latest
+    steps:
+    - id: setup-environment
+      name: setup-environment
+      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      with:
+        label: init
+        step-name: setup-environment
+    - id: clone-cicd-onboarding-repo
+      name: clone-cicd-onboarding-repo
+      uses: actions/checkout@v2
+      with:
+        ref: development
+        path: ${{ env.CICD_REPO_ONBOARDING_DIR }}
+    - id: clone-cicd-manager-repo
+      name: clone-cicd-manager-repo
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ github.repository_owner	}}/${{ env.CICD_MANAGER }}
+        ref: development
+        path: ${{ env.CICD_REPO_MGR_DIR }}
+    - id: parse-system-def
+      name: parse-system-def
+      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      with:
+        label: init
+        step-name: parse-system-def
+    outputs:
+      TEAM_NAME: ${{ env.TEAM_NAME }}
+      DEV_BRANCH: ${{ env.DEV_BRANCH }}
+      REPO_NAMES: ${{ env.REPO_NAMES }}
+      CICD_REPO_ONBOARDING_DIR: ${{ env.CICD_REPO_ONBOARDING_DIR }}
+      DEV_ENVIRONMENT: ${{ env.DEV_ENVIRONMENT }}
+      TEST_ENVIRONMENTS: ${{ env.TEST_ENVIRONMENTS }}
+      RESOURCE_QUOTAS: ${{ env.RESOURCE_QUOTAS }}
+      IMAGE_REGISTRY_URL: ${{ env.IMAGE_REGISTRY_URL }}
+      IMAGE_REGISTRY_USERNAME: ${{ env.IMAGE_REGISTRY_USERNAME }}
+  configure-sdlc-environments:
+    runs-on: ubuntu-latest
+    needs: gather-system-info
+    env:
+      TEAM_NAME: ${{ needs.gather-system-info.outputs.TEAM_NAME }}
+      DEV_ENVIRONMENT: ${{ needs.gather-system-info.outputs.DEV_ENVIRONMENT }}
+      TEST_ENVIRONMENTS: ${{ needs.gather-system-info.outputs.TEST_ENVIRONMENTS }}
+      RESOURCE_QUOTAS: ${{ needs.gather-system-info.outputs.RESOURCE_QUOTAS }}
+      IMAGE_REGISTRY_URL: ${{ needs.gather-system-info.outputs.IMAGE_REGISTRY_URL }}
+      IMAGE_REGISTRY_USERNAME: ${{ needs.gather-system-info.outputs.IMAGE_REGISTRY_USERNAME }}
+      IMAGE_REGISTRY_PWD: ${{ secrets.IMAGE_REGISTRY_PWD }}
+      OCP_USER: ${{ secrets.OCP_USER }}
+      OCP_CREDS: ${{ secrets.OCP_CREDS }}
+      OCP_URL: ${{ secrets.OCP_URL }}
+    steps:
+    - id: configure-sdlc-environments
+      name: configure-sdlc-environments
+      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      with:
+        label: infra
+        step-name: configure-sdlc-environments
+  onboard-system:
+    runs-on: ubuntu-latest
+    needs: [gather-system-info, configure-sdlc-environments]
+    env:
+      CICD_REPO_ONBOARDING_DIR: ${{ needs.gather-system-info.outputs.CICD_REPO_ONBOARDING_DIR }}
+      DEV_BRANCH: ${{ needs.gather-system-info.outputs.DEV_BRANCH }}
+      TEAM_NAME: ${{ needs.gather-system-info.outputs.TEAM_NAME }}
+      DEV_ENVIRONMENT: ${{ needs.gather-system-info.outputs.DEV_ENVIRONMENT }}
+      TEST_ENVIRONMENTS: ${{ needs.gather-system-info.outputs.TEST_ENVIRONMENTS }}
+      OCP_USER: ${{ secrets.OCP_USER }}
+      OCP_CREDS: ${{ secrets.OCP_CREDS }}
+      OCP_URL: ${{ secrets.OCP_URL }}
+      GITHUB_TOKEN: ${{ secrets.ONBOARDING_CREDS }}
+    strategy:
+      matrix:
+        REPO_NAMES: ${{ fromJSON(needs.gather-system-info.outputs.REPO_NAMES) }}
+    steps:
+    - id: setup-environment
+      name: setup-environment
+      run: |
+        set -ex
+        REPO_NAME=${{ matrix.REPO_NAMES }}
+        echo "WORKING_DIR=${GITHUB_WORKSPACE}/${REPO_NAME}" >> ${GITHUB_ENV}
+        echo "REPO_NAME=${REPO_NAME}" >>  ${GITHUB_ENV}
+        set +ex
+    - id: clone-cicd-onboarding-repo
+      name: clone-cicd-onboarding-repo
+      uses: actions/checkout@v2
+      with:
+        ref: development
+        path: ${{ env.CICD_REPO_ONBOARDING_DIR }}
+    - id: clone-app-repo
+      name: clone-app-repo
+      uses: actions/checkout@v2
+      with:
+        repository: ${{ env.REPO_NAME }}
+        ref: ${{ env.DEV_BRANCH }}
+        path: ${{ env.WORKING_DIR }}
+        token: ${{ secrets.ONBOARDING_CREDS }}
+    - id: install-github-workflow-directory
+      name: install-github-workflow-directory
+      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      with:
+        label: infra
+        step-name: install-github-workflow-directory
+    - id: set-service-account-token
+      name: set-service-account-token
+      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      with:
+        label: infra
+        step-name: set-service-account-token
