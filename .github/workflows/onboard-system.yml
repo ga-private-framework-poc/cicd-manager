@@ -13,7 +13,7 @@ jobs:
     steps:
     - id: setup-environment
       name: setup-environment
-      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      uses: ga-private-framework-poc/cicd-manager/.github/run-step@development
       with:
         label: init
         step-name: setup-environment
@@ -32,7 +32,7 @@ jobs:
         path: ${{ env.CICD_REPO_MGR_DIR }}
     - id: parse-system-def
       name: parse-system-def
-      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      uses: ga-private-framework-poc/cicd-manager/.github/run-step@development
       with:
         label: init
         step-name: parse-system-def
@@ -64,7 +64,7 @@ jobs:
     steps:
     - id: configure-sdlc-environments
       name: configure-sdlc-environments
-      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      uses: ga-private-framework-poc/cicd-manager/.github/run-step@development
       with:
         label: infra
         step-name: configure-sdlc-environments
@@ -109,13 +109,13 @@ jobs:
         token: ${{ secrets.ONBOARDING_CREDS }}
     - id: install-github-workflow-directory
       name: install-github-workflow-directory
-      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      uses: ga-private-framework-poc/cicd-manager/.github/run-step@development
       with:
         label: infra
         step-name: install-github-workflow-directory
     - id: set-service-account-token
       name: set-service-account-token
-      uses: ga-framework-poc/cicd-manager/.github/run-step@development
+      uses: ga-private-framework-poc/cicd-manager/.github/run-step@development
       with:
         label: infra
         step-name: set-service-account-token
