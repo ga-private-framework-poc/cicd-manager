@@ -13,7 +13,7 @@ jobs:
     steps:
     - id: setup-environment
       name: setup-environment
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: init
         step-name: setup-environment
@@ -26,13 +26,13 @@ jobs:
         path: ${{ env.CICD_REPO_MGR_DIR }}
     - id: parse-system-def
       name: parse-system-def
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: init
         step-name: parse-system-def
     - id: parse-component-def
       name: parse-component-def
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: init
         step-name: parse-component-def
@@ -44,31 +44,31 @@ jobs:
         path: ${{ env.WORKING_DIR }}
     - id: build
       name: build
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: ${{ env.CODEBASE }}
         step-name: build
     - id: test
       name: test
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: ${{ env.CODEBASE }}
         step-name: test
     - id: scan
       name: scan
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: ${{ env.CODEBASE }}
         step-name: scan
     - id: build-image
       name: build-image
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: image
         step-name: build-image
     - id: scan-image
       name: scan-image
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: image
         step-name: scan-image
@@ -78,7 +78,7 @@ jobs:
         podman login -u ${IMAGE_REGISTRY_USERNAME} -p ${{ secrets.IMAGE_REGISTRY_PWD }} ${IMAGE_REGISTRY_URL}
     - id: push-image
       name: push-image
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: image
         step-name: push-image

@@ -13,7 +13,7 @@ jobs:
     steps:
     - id: setup-environment
       name: setup-environment
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: init
         step-name: setup-environment
@@ -26,13 +26,13 @@ jobs:
         path: ${{ env.CICD_REPO_MGR_DIR }}
     - id: parse-system-def
       name: parse-system-def
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: init
         step-name: parse-system-def
     - id: parse-component-def
       name: parse-component-def
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: init
         step-name: parse-component-def
@@ -93,7 +93,7 @@ jobs:
         echo "[WARNING: NOT IMPLEMENTED] Promoting to ${DEPLOY_ENV}..."
     - id: upgrade-helm-chart
       name: upgrade-helm-chart
-      uses: ga-private-framework-poc/$REPO_NAME%/.github/run-step@development
+      uses: %REPO_NAME%/.github/run-step@development
       with:
         label: deploy
         step-name: upgrade-helm-chart

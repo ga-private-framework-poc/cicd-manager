@@ -5,13 +5,13 @@ on:
   workflow_dispatch:
 jobs:
   build-from-source:
-    uses: ga-private-framework-poc/$REPO_NAME%/.github/workflows/build-from-source.yml@development
+    uses: %REPO_NAME%/.github/workflows/build-from-source.yml@development
     with:
       system-name: %SYSTEM_NAME%
     secrets: inherit
   deploy-to-all:
     needs: build-from-source
-    uses: ga-private-framework-poc/$REPO_NAME%/.github/workflows/promote.yml@development
+    uses: %REPO_NAME%/.github/workflows/promote.yml@development
     with:
       system-name: %SYSTEM_NAME%
     secrets: inherit
