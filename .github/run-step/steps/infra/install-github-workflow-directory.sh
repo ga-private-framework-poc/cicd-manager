@@ -16,6 +16,7 @@ done
 find ${WORKING_DIR}/.github/workflows/ -type f \( -iname \*.yml -o -iname \*.yaml \) \
     -exec sed -i -e "s/%SYSTEM_NAME%/${SYSTEM_NAME}/g" \
                  -e "s/%TEAM_NAME%/${TEAM_NAME}/g" \
+                 -e "s/%DEV_BRANCH%/${DEV_BRANCH}/g" \
                  -e "s|%REPO_NAME%|${REPO_NAME}|g" {} +
 
 
