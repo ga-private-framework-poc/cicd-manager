@@ -3,6 +3,9 @@
 
 set -ex
 
+OCP_URL=$(yq '.cluster-url' ${SYSTEM_CONFIG_FILE})
+echo "OCP_URL=${OCP_URL}" >> ${GITHUB_ENV}
+
 IMAGE_REGISTRY_URL=$(yq '.image-registry.url' ${SYSTEM_CONFIG_FILE})
 echo "IMAGE_REGISTRY_URL=${IMAGE_REGISTRY_URL}" >> ${GITHUB_ENV}
 

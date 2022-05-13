@@ -43,6 +43,7 @@ jobs:
       COMPONENT_NAME: ${{ env.COMPONENT_NAME }}
       DEV_BRANCH: ${{ env.DEV_BRANCH }}
       NON_PROD_ENVIRONMENTS: ${{ env.NON_PROD_ENVIRONMENTS }}
+      OCP_URL: ${{ env.OCP_URL }}
   promote-and-deploy:
     runs-on: ubuntu-latest
     needs: gather-system-info
@@ -52,7 +53,7 @@ jobs:
       WORKING_DIR: ${{ needs.gather-system-info.outputs.WORKING_DIR }}
       HELM_CHART_DIR: ${{ needs.gather-system-info.outputs.HELM_CHART_DIR }}
       COMPONENT_NAME: ${{ needs.gather-system-info.outputs.COMPONENT_NAME }}
-      OCP_URL: ${{ secrets.OCP_URL }}
+      OCP_URL: ${{ needs.gather-system-info.outputs.OCP_URL }}
       NON_PROD_ENVIRONMENTS: ${{ needs.gather-system-info.outputs.NON_PROD_ENVIRONMENTS }}
     strategy:
       max-parallel: 1

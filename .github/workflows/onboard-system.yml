@@ -46,6 +46,7 @@ jobs:
       RESOURCE_QUOTAS: ${{ env.RESOURCE_QUOTAS }}
       IMAGE_REGISTRY_URL: ${{ env.IMAGE_REGISTRY_URL }}
       IMAGE_REGISTRY_USERNAME: ${{ env.IMAGE_REGISTRY_USERNAME }}
+      OCP_URL: ${{ env.OCP_URL }}
   configure-sdlc-environments:
     runs-on: ubuntu-latest
     needs: gather-system-info
@@ -57,9 +58,9 @@ jobs:
       IMAGE_REGISTRY_URL: ${{ needs.gather-system-info.outputs.IMAGE_REGISTRY_URL }}
       IMAGE_REGISTRY_USERNAME: ${{ needs.gather-system-info.outputs.IMAGE_REGISTRY_USERNAME }}
       IMAGE_REGISTRY_PWD: ${{ secrets.IMAGE_REGISTRY_PWD }}
+      OCP_URL: ${{ needs.gather-system-info.outputs.OCP_URL }}
       OCP_USER: ${{ secrets.OCP_USER }}
       OCP_CREDS: ${{ secrets.OCP_CREDS }}
-      OCP_URL: ${{ secrets.OCP_URL }}
     steps:
     - id: configure-sdlc-environments
       name: configure-sdlc-environments
@@ -78,7 +79,7 @@ jobs:
       TEST_ENVIRONMENTS: ${{ needs.gather-system-info.outputs.TEST_ENVIRONMENTS }}
       OCP_USER: ${{ secrets.OCP_USER }}
       OCP_CREDS: ${{ secrets.OCP_CREDS }}
-      OCP_URL: ${{ secrets.OCP_URL }}
+      OCP_URL: ${{ needs.gather-system-info.outputs.OCP_URL }}
       GITHUB_TOKEN: ${{ secrets.ONBOARDING_CREDS }}
     strategy:
       matrix:
