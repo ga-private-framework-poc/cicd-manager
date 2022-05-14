@@ -2,20 +2,18 @@
 
 This document will summarize the design and concepts around a group of GitHub Actions workflows that will fulfill the following goals:
 
-* Create a centralized framework of CICD workflows based on GitHub Actions for use across the organization
-* Automate the onboarding of GitHub repositories into the CICD framework
-* Secure the framework from modification from anyone outside the infrastructure/CICD team
-* Limit the amount of work developers need to do integrate and use the CICD system
-    ** Ideally only a configuration file to be processed by the CICD system
-* The framework should require minimal maintenance by the CICD team
-* Extending the framework should be simple and by convention
+* Create a standardized set of workflows based on GitHub Actions for use across the organization.
+* Automate the onboarding of component GitHub repositories into the CICD framework.
+* Limit the amount of work developers need to do integrate and use the CICD system.
+    ** Ideally only a configuration file to be processed by the CICD system.
+* The framework should require minimal maintenance by the CICD team.
+* Extending the framework should be simple and by convention.
 
 == Assumptions
 
 * Promotion will be automated (i.e. promoting from one SDLC environment to the next will not be manual).
 * Every environment will run tests after deployment.
-* The CICD system will assume that GitHub Action runners are self-hosted.
-* GitHub credentials are GitHub secrets.
+* GitHub and Kubernetes/Openshift Cluster credentials are GitHub secrets.
 * Each Git repository will consist of exactly one component or microservice.
 * Readers are familiar with Git, GitHub Actions, and Kubernetes.
 
@@ -27,24 +25,20 @@ The design assumes three separate functional goals for the system:
 * _Build from Source_: Build a Git repository into an OCI compliant image and push to an image registry
 * _Promotion and Deployment_: Promote the image to the next environment if already deployed, and deploy the image into the container orchestration platform
 
-=== Repositories and Directory Structure
+=== CICD Management Repository and Directory Structure
 
-* *cicd-onboarding*: Onboarding repository.  Should be private to organization, and no one should have access outside of nfra and/or CICD privileged users to protect organization GitHub Secrets.
+* *cicd-manger*: CICD Management repository.  Should be private to organization, and no one should have access outside of infra and/or CICD privileged users to protect organization GitHub Secrets.
   ** *.github*
-    *** *workflows*: Contains all onboarding workflow
-  ** *.github-app-template*
-    ** *workflows*: Contains a YAML template of a workflow to be embedded in component repositories.  The template uses the reusable workflows defined in the cicd-manager repository.
-    ** *CODEOWNERS* (file): GitHub specific file for setting permissions within a directory.  Ensures only infra and/or CICD privileged users will be able to push changes or approve pull requests to the workflows realized from this directory in a component Git repository.
-
-* *cicd-manager*: should be view only, and public (until reusable Workflows can be used from less privileged GitHub repositories).
-  ** *.github*
+    *** *CODEOWNERS* (file): GitHub specific file for setting permissions within a directory.  Ensures only infra and/or CICD privileged users will be able to push changes or approve pull requests to the workflows realized from this directory in a component Git repository.
+    *** *run-step*
+      *** _action.yml_: custom GitHub Action for finding and running shell scripts based on <<Codebase,codebase>> and workflow job step labels.
+      *** *steps*: Contains all directories for each <<Codebase,codebase>>
+        **** *<codebase id>*: Directories named for each <<Codebase,codebase>> ID, and the naming convention helps with leveraging the <<Run Steps,run step>> framework.  Each directory will contain a set of scripts specific to the <<Codebase,codebase>> and named corresponding the actual step defined in the workflow.
     *** *system-defs*: Contains all <<System Definitions,system definitions>>
-    *** *workflows*: Contains all reusable (centralized) GitHub Action <<Reusable Workflows,workflows>>
-  ** *run-step*
-    *** _action.yml_: custom GitHub Action for finding and running shell scripts based on <<Codebase,codebase>> and workflow job step labels.
-    *** *steps*: Contains all directories for each <<Codebase,codebase>>
-      **** *<codebase id>*: Directories named for each <<Codebase,codebase>> ID, and the naming convention helps with leveraging the <<Run Steps,run step>> framework.  Each directory will contain a set of scripts specific to the <<Codebase,codebase>> and named corresponding the actual step defined in the workflow.
-
+    *** *workflows*: Contains the onboarding workflow and templates for the system repository workflows (<workflow>.yml.template files).
+  ** *resources*: Contains any resources needed by the onboarding process.
+    *** *resource-quotas*: Contains resource quota defintions for SDLC environments.
+ 
 === System Definitions
 
 Collections of related software components, each in an individual Git repository, will be defined in a YAML based configuration file owned and managed by the CICD team.  Each configuration file will define the <<Codebase,codebase>> the component was developed with and the Git repo where the component resides.  It will also contain a list of test environments the CICD system should provide to support each components SDLC (optional).
