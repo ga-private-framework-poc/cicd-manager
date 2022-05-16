@@ -47,36 +47,61 @@ Collections of related software components, each in an individual Git repository
 .sample-system-def.yml
 [source,YAML]
 ----
-# GitHub organization the system repositories belong to
-organization: corp-org-name
-# Team name should correspond to a k8s/OCP RBAC group the system belongs to
-team: team-name
-# List of all components that make up a system; should correspond to a single namespace
+# Team the system repositories belong to
+team: team-a
+# Development branch of current release to build from
+branch: development
+# List of all components that make up a system; should correspond to a single OCP namespace
 components:
-  - repo: microservice-a
+    # GitHub repository
+  - repo: cicd-poc-app-1
     # java11 is an example of a codebase ID
-    codebase: java11 
-    # status is an example of other possible fields that could add 
-    # further information for an organization or team; end users
-    # may define an arbitrary number of additional properties per component
+    codebase: java11
+    # "status" example of an arbitrary, extra property end users of the system may add at their convenience
     status: active
-  - repo: microservice-2
+  - repo: cicd-poc-app-2
+    # node16 is an example of a codebase ID
     codebase: node16
     status: active
     overrides:
       # example of a component specific override for tests in the CICD system
       test: jest
-# list of test environments used by the CICD system to support the SDLC
-# development, pre-production, and production environments are assumed
+# label to be used for the development environment (where builds are initially deployed)
+dev-environment: dev
+# label to be used for the production environment
+prod-environment: prod
+# arbitrary list of test environments, in order, reflecting SDLC of system
+# NOTE: promotion across environments will be dev -> test-environments -> prod
 test-environments:
   - qa
   - uat
   - stg
+# Map of ResourceQuotas to apply to each SDLC environment
+resource-quotas:
+  dev: small
+  qa: medium
+  uat: medium
+  stg: medium
+  prod: large
 ----
+
+==== System Definition Naming Scheme
+
+The system definition file should be named after the system.  System definitions are looked up by file name in the `.github/system-defs` directory in the `cicd-manager` repository.
 
 ==== Codebase
 
 An arbitrary ID created by the organization and assigned to each repository to designate the platform and language of a set of repositories.  This ID is used by the <<Run Steps,run-step>> framework to determine which scripts to run.
+
+==== Dev, Prod, and Test Environments
+
+Each system must have a dev and prod environment defined.  Images are built from the development branch of each repository listed in the system.  Each image is deployed initially to the dev environment.  Promotion will occur across each test environment in the order listed, and ultimately to prod, assuming a successful deployment in the previous system.  This will occur automatically, following a strategy of [Continuous Deployment].  Automated deployments to prod will *not* be implemented.
+
+__NOTE: deployment to production is not currently implemented in this PoC.__
+
+==== Resource Quotas
+
+ResourceQuotas are defined in the `resource-quotas` directory in the `cicd-manager` repository, and are found by name; e.g. a SDLC environment defined with a `medium` resource quota in the system defintion file will look for a `medium.yml` in the resource-quotas directory.
 
 === Reusable Workflows
 
