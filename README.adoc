@@ -145,8 +145,7 @@ After a component repository is brought onboard, the build workflow will be in `
 * Push the image to a registry
 
 Since building, testing, and scanning will be different given the platform, language, testing frameworks, etc., the <<Codebase,codebase>> ID in the <<System Definitions,system definition file>> is used by the <<Run Steps,run step>> framework to determine how a repository is built, tested, and scanned.
- [TBD: currently undefined]
- 
+
 === Promote and Deploy
 
 Image promotion and deployment is governed by a single workflow `promote.yml`.  The workflow first deploys to the development environment directly after the <<Build,build>> takes place, and then uses a GitHub Action matrix to optionally deploy to any test environments defined int the <<System Definitions, System Definition File>>.  The matrix is able to run serially instead of in parallel thanks to the `max-parallel` value being set to one.
@@ -162,13 +161,13 @@ strategy:
 
 Promotion should involve three basic steps:
 
-* Copying (or re-tagging) the image built in the <<Build, build>> step
-* Deploying the image to the new environment
+* Copying (or re-tagging) the image built in the <<Build, build>> step.
+* Deploying the image to the new environment.
 * Running any integration tests in the new environment.
 
 If the image deploys properly and the tests pass, then promotion to the next environment is automatically run; otherwise, the workflow fails.
 
-The initial deployment to a "dev" environment will take place immediately after the image is built and pushed to the image registry.  After that, the image will be promoted, deployed, and tested for each of the listed test environments in the <<System Definitions, System Definition File>>; e.g.
+The initial deployment to a "dev" environment will take place immediately after the image is built and pushed to the image registry.  After that, the image will be promoted, deployed, and tested for each of the listed test environments in the order defined in the <<System Definitions, System Definition File>>; e.g.
 
 .Sample list of environments in a system definition file
 [source,YAML]
@@ -179,23 +178,17 @@ test-environments:
   - stg
 ----
 
+==== Helm
+
+System component repositories are expected to have a https://helm.sh/[Helm ] chart defined in a `.helm` directory.  For each environment to be deployed to, two values file may be defined: `values.yml` (default values for all environments), and `values-<env>.yml` where the `<env>` is replaced with environment label defined in the <<System Definitions, System Definition File>>; for example, if the environment is `qa`, then the values file with `qa` specific values would be named `values-qa.yml`.  Values in environment environment specific file are always given priority over the default values if they conflict.
+
 ==== Integration Test Step [TBD: currently undefined]
 
 The integration test step will launch a Job in the component environment to run the tests from there.  The logs generated from the Job will be tailed for viewing in the GitHub Actions logs.
 
-===== Production Promotion and Deployment [TBD: currently undefined]
-
-It is expected that promotion to a production environment for final release will happen in a separate workflow call than that of the initial build and promote workflow.
-
-=== Component Repository Workflow Templates
-
-==== Build and Promote
-
-There is currently only one workflow templated for insertion into each component repository, and it first calls the centralized, reusable <<Build,build>> workflow, parses the <<System Definition File,system definition file>> for itself to get the test environments for its SDLC, and then calls the <<Promote and Deploy,promotion>> centralized, reusable workflow.  When a component is <<System Onboarding,onboarded>> the template will be realized and copied, committed, and pushed into the component repository for use by the developer.
-
 ==== Promote to Production [TBD: currently undefined]
 
-Promote to production, to potentially include:
+It is expected that promotion to a production environment for final release will happen in a separate workflow call than that of the initial build and promote workflow.  Promote to production, to potentially include:
 
 * Canary and/or blue/green deployments
 * Approval process
