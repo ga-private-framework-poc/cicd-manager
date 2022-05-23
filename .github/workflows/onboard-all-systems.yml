@@ -20,7 +20,7 @@ jobs:
     - id: gather-all-systems
       name: gather-all-systems
       run: |
-        ALL_SYSTEM_DEFS=$(find ${SYSTEM_DEFS_DIR} \( -name '*.yml' -o -name '*.yaml' \) -exec basename -s .yml $(basename -s .yaml {}) \;) | head -c -1 | jq -Rsc 'split("\n")')
+        ALL_SYSTEM_DEFS=$(find ${SYSTEM_DEFS_DIR} \( -name '*.yml' -o -name '*.yaml' \) -exec basename -s .yml $(basename -s .yaml {}) \; | head -c -1 | jq -Rsc 'split("\n")')
         echo "ALL_SYSTEM_DEFS=${ALL_SYSTEM_DEFS}" >> ${GITHUB_ENV}
     outputs:
       ALL_SYSTEM_DEFS: ${{ env.ALL_SYSTEM_DEFS }}
