@@ -7,8 +7,7 @@ cp -RT ${CICD_REPO_MGR_DIR}/.github ${WORKING_DIR}/.github
 
 echo 'Generating .github directory for ${REPO_NAME}'
 
-rm ${WORKING_DIR}/.github/workflows/onboard-system.*
-rm ${WORKING_DIR}/.github/workflows/onboard-all-system.*
+rm ${WORKING_DIR}/.github/workflows/onboard*.*
 mv ${WORKING_DIR}/.github/workflows/build.yml ${WORKING_DIR}/.github/workflows/build-${SYSTEM_NAME}-${TEAM_NAME}.yml 
 
 for F_NAME in $(find ${WORKING_DIR}/.github/workflows -name "*.template")
