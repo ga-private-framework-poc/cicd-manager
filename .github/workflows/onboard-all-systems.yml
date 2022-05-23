@@ -38,6 +38,6 @@ jobs:
              -H "Authorization: token ${{ secrets.ONBOARDING_CREDS }}" \
              -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/${GITHUB_REPOSITORY}/actions/workflows/onboard-system.yml/dispatches \
-              -d '{"ref":"${{ github.env.GITHUB_REF_NAME }}","inputs":{"system-name":"${{ matrix.ALL_SYSTEM_DEFS }}"}'
+              -d '{"ref":"${{ github.ref_name }}","inputs":{"system-name":"${{ matrix.ALL_SYSTEM_DEFS }}"}'
       
 
