@@ -24,14 +24,12 @@ do
     fi
 
     PULL_SECRET_NAME=${SYSTEM_NAME}-${TEAM_NAME}-pull-secret
-    if [[ -z $(oc get secret --ignore-not-found --no-headers ${PULL_SECRET_NAME} -n ${OCP_PROJECT_NAME}) ]]
-    then
-        oc create secret docker-registry ${PULL_SECRET_NAME} \
-            --docker-username=${IMAGE_REGISTRY_USERNAME} \
-            --docker-password=${IMAGE_REGISTRY_PWD} \
-            --docker-server=${IMAGE_REGISTRY_URL} \
-            -n ${OCP_PROJECT_NAME}
-    fi
+    oc delete secret --ignore-not-found ${PULL_SECRET_NAME} -n ${OCP_PROJECT_NAME}
+    oc create secret docker-registry ${PULL_SECRET_NAME} \
+        --docker-username=${IMAGE_REGISTRY_USERNAME} \
+        --docker-password=${IMAGE_REGISTRY_PWD} \
+        --docker-server=${IMAGE_REGISTRY_URL} \
+        -n ${OCP_PROJECT_NAME}
 
     SERVICE_ACCOUNT_NAME=${SYSTEM_NAME}-${TEAM_NAME}-service-account
     if [[ -z $(oc get sa --ignore-not-found --no-headers ${SERVICE_ACCOUNT_NAME} -n ${OCP_PROJECT_NAME}) ]]
