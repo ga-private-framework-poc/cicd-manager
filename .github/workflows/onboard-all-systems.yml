@@ -35,7 +35,7 @@ jobs:
       name: onboard-all-systems
       run: |
         curl -X POST \
-             -H "Authorization: token ${{ secrets.ONBOARDING_CREDS }}"
+             -H "Authorization: token ${{ secrets.ONBOARDING_CREDS }}" \
              -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/ga-private-framework/cicd-manager/actions/workflows/onboard-system/dispatches \
               -d '{"ref":"development","inputs":{"system-name":"${{ matrix.ALL_SYSTEM_DEFS }}"}'
