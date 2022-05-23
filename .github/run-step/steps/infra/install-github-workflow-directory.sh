@@ -2,10 +2,10 @@
 
 set -ex
 
-cp -v *.build.yml /tmp
+[ $(find ${WORKING_DIR}/.github/workflows -name "*.build.yml" -print -quit | wc -l) -gt 0 ] && cp -v *.build.yml /tmp
 git -C ${WORKING_DIR} rm -rf .github || :
 cp -RT ${CICD_REPO_MGR_DIR}/.github ${WORKING_DIR}/.github
-cp -v /tmp/*.build.yml ${WORKING_DIR}/.github/workflows/
+[ $(find /tmp -name "*.build.yml" -print -quit | wc -l) -gt 0 ] && cp -v /tmp/*.build.yml ${WORKING_DIR}/.github/workflows/
 
 echo 'Generating .github directory for ${REPO_NAME}'
 
